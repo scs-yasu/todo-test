@@ -14,7 +14,8 @@ Related: [GitHub Issue #1](https://github.com/scs-yasu/todo-test/issues/1)
 3. **Delete Task** - User can delete a task from the list
 4. **Due Date** - User can set an optional due date for each task; overdue tasks are visually highlighted
 5. **Category** - Each task has a category selected from: 仕事・個人・買い物・その他
-6. **Persistent Storage** - All tasks are saved to localStorage and restored on page load
+6. **Priority** - Each task has a priority level selected from: 高・中・低 (default: 中)
+7. **Persistent Storage** - All tasks are saved to localStorage and restored on page load
 
 ## Tech Stack
 
@@ -45,6 +46,7 @@ todo-test/
 #### Input Area
 - Text input field with placeholder text (e.g., "Add a new task...")
 - Category select field with fixed options: 仕事 / 個人 / 買い物 / その他
+- Priority select field with options: 高 / 中 / 低 (default: 中)
 - Date input field for optional due date
 - "Add" button to submit the task
 - Enter key also submits the task
@@ -54,6 +56,7 @@ todo-test/
   - A checkbox or clickable area to toggle completion
   - The task text (with strikethrough style when completed)
   - Category label (e.g., badge or tag)
+  - Priority label (色分け: 高=赤, 中=黄, 低=緑)
   - Due date label (if set); displayed in red when overdue
   - A delete button (e.g., "x" or trash icon)
 - Completed tasks are visually distinguished (e.g., strikethrough text, muted color)
@@ -63,6 +66,7 @@ todo-test/
 ### Interactions
 - Adding a task with empty text is prevented
 - Category is selected when adding a task (from 仕事 / 個人 / 買い物 / その他)
+- Priority is selected when adding a task (from 高 / 中 / 低; defaults to 中)
 - Newly added tasks appear at the top of the list (newest first)
 - Toggling completion updates both the UI and localStorage
 - Deleting a task removes it from both the UI and localStorage
@@ -77,6 +81,7 @@ Tasks are stored in localStorage as a JSON array:
     "id": 1,
     "text": "Buy groceries",
     "category": "買い物",
+    "priority": "中",
     "completed": false,
     "dueDate": "2026-03-15"
   }
@@ -86,5 +91,6 @@ Tasks are stored in localStorage as a JSON array:
 - `id` (number) - Unique identifier (timestamp-based)
 - `text` (string) - Task description
 - `category` (string) - Task category; one of `仕事` / `個人` / `買い物` / `その他`
+- `priority` (string) - Priority level; one of `高` / `中` / `低` (default: `中`)
 - `completed` (boolean) - Completion status
 - `dueDate` (string | null) - Due date in "YYYY-MM-DD" format, or null if not set
