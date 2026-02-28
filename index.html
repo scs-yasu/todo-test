@@ -1,20 +1,26 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>TODO App</title>
   <style>
     :root {
-      --bg: #f4f6fb;
+      --bg: #f4f7fb;
       --panel: #ffffff;
       --text: #1f2937;
       --muted: #6b7280;
       --border: #d1d5db;
       --primary: #2563eb;
       --danger: #dc2626;
-      --danger-soft: #fee2e2;
-      --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+      --danger-soft: #fef2f2;
+      --priority-high: #b91c1c;
+      --priority-high-bg: #fee2e2;
+      --priority-medium: #a16207;
+      --priority-medium-bg: #fef9c3;
+      --priority-low: #166534;
+      --priority-low-bg: #dcfce7;
+      --shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
     }
 
     * {
@@ -24,16 +30,16 @@
     body {
       margin: 0;
       min-height: 100vh;
+      padding: 24px;
       font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(160deg, #f8fafc 0%, #eef2ff 100%);
       color: var(--text);
+      background: linear-gradient(150deg, #f8fafc 0%, #ecfeff 100%);
       display: grid;
       place-items: center;
-      padding: 24px;
     }
 
     .app {
-      width: min(680px, 100%);
+      width: min(860px, 100%);
       background: var(--panel);
       border: 1px solid #e5e7eb;
       border-radius: 16px;
@@ -43,54 +49,57 @@
 
     h1 {
       margin: 0 0 20px;
-      font-size: 1.8rem;
       text-align: center;
       letter-spacing: 0.03em;
     }
 
     .input-row {
       display: grid;
-      grid-template-columns: 1fr 170px 96px;
+      grid-template-columns: 1.7fr 0.8fr 0.7fr 0.9fr auto;
       gap: 10px;
       margin-bottom: 18px;
     }
 
     input[type="text"],
     input[type="date"],
+    select,
     button {
       height: 42px;
       border: 1px solid var(--border);
       border-radius: 10px;
       font-size: 0.95rem;
+      background: #fff;
+      color: var(--text);
     }
 
     input[type="text"],
-    input[type="date"] {
+    input[type="date"],
+    select {
       padding: 0 12px;
-      color: var(--text);
-      background: #fff;
     }
 
     input[type="text"]:focus,
     input[type="date"]:focus,
+    select:focus,
     button:focus-visible {
       outline: 2px solid #bfdbfe;
       outline-offset: 1px;
     }
 
     #add-button {
+      border-color: var(--primary);
       background: var(--primary);
       color: #fff;
-      border: 1px solid var(--primary);
       font-weight: 600;
       cursor: pointer;
+      padding: 0 18px;
     }
 
     #add-button:hover {
       filter: brightness(0.95);
     }
 
-    ul {
+    #task-list {
       margin: 0;
       padding: 0;
       list-style: none;
@@ -104,8 +113,8 @@
       padding: 12px;
       display: grid;
       grid-template-columns: auto 1fr auto;
-      align-items: center;
-      gap: 10px;
+      align-items: start;
+      gap: 12px;
       background: #fff;
     }
 
@@ -114,9 +123,13 @@
       background: var(--danger-soft);
     }
 
+    .task-item.completed {
+      opacity: 0.78;
+    }
+
     .task-main {
       display: grid;
-      gap: 4px;
+      gap: 8px;
       min-width: 0;
     }
 
@@ -125,28 +138,62 @@
       overflow-wrap: anywhere;
     }
 
-    .task-meta {
-      font-size: 0.85rem;
-      color: var(--muted);
-    }
-
-    .task-meta.overdue {
-      color: var(--danger);
-      font-weight: 600;
-    }
-
     .task-item.completed .task-text {
       text-decoration: line-through;
       color: var(--muted);
     }
 
-    .delete-btn {
-      background: transparent;
+    .task-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.83rem;
+      color: var(--muted);
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      background: #f9fafb;
+      color: #374151;
+      font-weight: 600;
+      line-height: 1.45;
+    }
+
+    .priority-high {
+      color: var(--priority-high);
+      background: var(--priority-high-bg);
+      border-color: #fecaca;
+    }
+
+    .priority-medium {
+      color: var(--priority-medium);
+      background: var(--priority-medium-bg);
+      border-color: #fde68a;
+    }
+
+    .priority-low {
+      color: var(--priority-low);
+      background: var(--priority-low-bg);
+      border-color: #bbf7d0;
+    }
+
+    .due-date.overdue {
       color: var(--danger);
-      border: 1px solid #fecaca;
+      font-weight: 700;
+    }
+
+    .delete-btn {
       width: 34px;
       height: 34px;
+      border: 1px solid #fecaca;
       border-radius: 8px;
+      background: transparent;
+      color: var(--danger);
       font-size: 1.1rem;
       line-height: 1;
       cursor: pointer;
@@ -157,17 +204,37 @@
     }
 
     .empty {
+      margin: 0;
       text-align: center;
       color: var(--muted);
-      padding: 28px 8px;
       border: 1px dashed #d1d5db;
       border-radius: 12px;
+      padding: 28px 8px;
       background: #fafafa;
     }
 
-    @media (max-width: 620px) {
+    @media (max-width: 760px) {
+      .input-row {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      #add-button {
+        grid-column: 1 / -1;
+      }
+    }
+
+    @media (max-width: 480px) {
       .input-row {
         grid-template-columns: 1fr;
+      }
+
+      .task-item {
+        grid-template-columns: auto 1fr;
+      }
+
+      .delete-btn {
+        grid-column: 2;
+        justify-self: end;
       }
     }
   </style>
@@ -177,24 +244,55 @@
     <h1>TODO App</h1>
     <form id="task-form" class="input-row">
       <input id="task-input" type="text" placeholder="Add a new task..." autocomplete="off" />
-      <input id="due-date-input" type="date" />
+      <select id="category-input" aria-label="Category">
+        <option value="仕事">仕事</option>
+        <option value="個人">個人</option>
+        <option value="買い物">買い物</option>
+        <option value="その他">その他</option>
+      </select>
+      <select id="priority-input" aria-label="Priority">
+        <option value="高">高</option>
+        <option value="中" selected>中</option>
+        <option value="低">低</option>
+      </select>
+      <input id="due-date-input" type="date" aria-label="Due date" />
       <button id="add-button" type="submit">Add</button>
     </form>
+
     <ul id="task-list"></ul>
     <p id="empty-message" class="empty">No tasks yet. Add your first task.</p>
   </main>
 
   <script>
     const STORAGE_KEY = "todo-app-tasks";
+    const CATEGORIES = ["仕事", "個人", "買い物", "その他"];
+    const PRIORITIES = ["高", "中", "低"];
 
-    /** @type {{id:number,text:string,completed:boolean,dueDate:string|null}[]} */
+    /** @type {{id:number,text:string,category:string,priority:string,completed:boolean,dueDate:string|null}[]} */
     let tasks = [];
 
     const form = document.getElementById("task-form");
     const taskInput = document.getElementById("task-input");
+    const categoryInput = document.getElementById("category-input");
+    const priorityInput = document.getElementById("priority-input");
     const dueDateInput = document.getElementById("due-date-input");
     const taskList = document.getElementById("task-list");
     const emptyMessage = document.getElementById("empty-message");
+
+    function normalizeTask(raw) {
+      if (!raw || typeof raw !== "object") return null;
+
+      const id = Number(raw.id);
+      const text = typeof raw.text === "string" ? raw.text.trim() : "";
+      const category = CATEGORIES.includes(raw.category) ? raw.category : "その他";
+      const priority = PRIORITIES.includes(raw.priority) ? raw.priority : "中";
+      const completed = Boolean(raw.completed);
+      const dueDate = typeof raw.dueDate === "string" && raw.dueDate ? raw.dueDate : null;
+
+      if (!Number.isFinite(id) || !text) return null;
+
+      return { id, text, category, priority, completed, dueDate };
+    }
 
     function loadTasks() {
       try {
@@ -202,7 +300,7 @@
         if (!raw) return;
         const parsed = JSON.parse(raw);
         if (!Array.isArray(parsed)) return;
-        tasks = parsed.filter((task) => task && typeof task.id === "number" && typeof task.text === "string");
+        tasks = parsed.map(normalizeTask).filter(Boolean);
       } catch (error) {
         console.error("Failed to load tasks from localStorage:", error);
       }
@@ -223,11 +321,17 @@
     function formatDueDate(dateString) {
       if (!dateString) return "";
       const date = new Date(dateString + "T00:00:00");
-      return date.toLocaleDateString(undefined, {
+      return date.toLocaleDateString("ja-JP", {
         year: "numeric",
-        month: "short",
-        day: "numeric"
+        month: "2-digit",
+        day: "2-digit"
       });
+    }
+
+    function priorityClass(priority) {
+      if (priority === "高") return "priority-high";
+      if (priority === "低") return "priority-low";
+      return "priority-medium";
     }
 
     function renderTasks() {
@@ -244,9 +348,7 @@
         checkbox.type = "checkbox";
         checkbox.checked = task.completed;
         checkbox.setAttribute("aria-label", "Toggle task completion");
-        checkbox.addEventListener("change", () => {
-          toggleTask(task.id);
-        });
+        checkbox.addEventListener("change", () => toggleTask(task.id));
 
         const main = document.createElement("div");
         main.className = "task-main";
@@ -254,24 +356,38 @@
         const text = document.createElement("span");
         text.className = "task-text";
         text.textContent = task.text;
-        main.appendChild(text);
+
+        const meta = document.createElement("div");
+        meta.className = "task-meta";
+
+        const category = document.createElement("span");
+        category.className = "pill";
+        category.textContent = "カテゴリ: " + task.category;
+
+        const priority = document.createElement("span");
+        priority.className = "pill " + priorityClass(task.priority);
+        priority.textContent = "優先: " + task.priority;
+
+        meta.appendChild(category);
+        meta.appendChild(priority);
 
         if (task.dueDate) {
-          const meta = document.createElement("span");
-          meta.className = "task-meta";
-          if (overdue) meta.classList.add("overdue");
-          meta.textContent = "Due: " + formatDueDate(task.dueDate);
-          main.appendChild(meta);
+          const due = document.createElement("span");
+          due.className = "due-date";
+          if (overdue) due.classList.add("overdue");
+          due.textContent = "期限: " + formatDueDate(task.dueDate);
+          meta.appendChild(due);
         }
+
+        main.appendChild(text);
+        main.appendChild(meta);
 
         const deleteButton = document.createElement("button");
         deleteButton.className = "delete-btn";
         deleteButton.type = "button";
         deleteButton.setAttribute("aria-label", "Delete task");
         deleteButton.textContent = "x";
-        deleteButton.addEventListener("click", () => {
-          deleteTask(task.id);
-        });
+        deleteButton.addEventListener("click", () => deleteTask(task.id));
 
         li.appendChild(checkbox);
         li.appendChild(main);
@@ -282,26 +398,26 @@
       emptyMessage.style.display = tasks.length === 0 ? "block" : "none";
     }
 
-    function addTask(text, dueDate) {
+    function addTask(text, category, priority, dueDate) {
       const trimmed = text.trim();
       if (!trimmed) return;
+
       const newTask = {
         id: Date.now(),
         text: trimmed,
+        category: CATEGORIES.includes(category) ? category : "その他",
+        priority: PRIORITIES.includes(priority) ? priority : "中",
         completed: false,
         dueDate: dueDate || null
       };
 
-      tasks.unshift(newTask); // Newest first
+      tasks.unshift(newTask);
       saveTasks();
       renderTasks();
     }
 
     function toggleTask(id) {
-      tasks = tasks.map((task) => {
-        if (task.id !== id) return task;
-        return { ...task, completed: !task.completed };
-      });
+      tasks = tasks.map((task) => task.id === id ? { ...task, completed: !task.completed } : task);
       saveTasks();
       renderTasks();
     }
@@ -314,8 +430,10 @@
 
     form.addEventListener("submit", (event) => {
       event.preventDefault();
-      addTask(taskInput.value, dueDateInput.value);
+      addTask(taskInput.value, categoryInput.value, priorityInput.value, dueDateInput.value);
       taskInput.value = "";
+      categoryInput.value = "仕事";
+      priorityInput.value = "中";
       dueDateInput.value = "";
       taskInput.focus();
     });
