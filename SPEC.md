@@ -59,7 +59,7 @@ todo-test/
 
 ### Interactions
 - Adding a task with empty text is prevented
-- Newly added tasks appear at the top or bottom of the list
+- Newly added tasks appear at the top of the list (newest first)
 - Toggling completion updates both the UI and localStorage
 - Deleting a task removes it from both the UI and localStorage
 
