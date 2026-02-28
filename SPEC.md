@@ -9,10 +9,11 @@ Related: [GitHub Issue #1](https://github.com/scs-yasu/todo-test/issues/1)
 
 ## Functional Requirements
 
-1. **Add Task** - User can add a new task by entering text and submitting
+1. **Add Task** - User can add a new task by entering text and an optional due date
 2. **Toggle Complete** - User can toggle a task between completed and incomplete states
 3. **Delete Task** - User can delete a task from the list
-4. **Persistent Storage** - All tasks are saved to localStorage and restored on page load
+4. **Due Date** - User can set an optional due date for each task; overdue tasks are visually highlighted
+5. **Persistent Storage** - All tasks are saved to localStorage and restored on page load
 
 ## Tech Stack
 
@@ -42,6 +43,7 @@ todo-test/
 
 #### Input Area
 - Text input field with placeholder text (e.g., "Add a new task...")
+- Date input field for optional due date
 - "Add" button to submit the task
 - Enter key also submits the task
 
@@ -49,8 +51,10 @@ todo-test/
 - Each task displays:
   - A checkbox or clickable area to toggle completion
   - The task text (with strikethrough style when completed)
+  - Due date label (if set); displayed in red when overdue
   - A delete button (e.g., "x" or trash icon)
 - Completed tasks are visually distinguished (e.g., strikethrough text, muted color)
+- Overdue tasks (past due date and not completed) are highlighted (e.g., red text or border)
 - Empty state message when no tasks exist
 
 ### Interactions
@@ -68,7 +72,8 @@ Tasks are stored in localStorage as a JSON array:
   {
     "id": 1,
     "text": "Buy groceries",
-    "completed": false
+    "completed": false,
+    "dueDate": "2026-03-15"
   }
 ]
 ```
@@ -76,3 +81,4 @@ Tasks are stored in localStorage as a JSON array:
 - `id` (number) - Unique identifier (timestamp-based)
 - `text` (string) - Task description
 - `completed` (boolean) - Completion status
+- `dueDate` (string | null) - Due date in "YYYY-MM-DD" format, or null if not set
